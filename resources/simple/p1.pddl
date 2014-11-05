@@ -1,0 +1,6 @@
+(define (problem p1)
+    (:domain simple)
+    (:init 	(p)
+     )  
+     (:goal (p))
+) 

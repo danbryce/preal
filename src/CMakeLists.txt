@@ -136,9 +136,9 @@ ExternalProject_Add(VAL
   GIT_TAG origin/master
   UPDATE_COMMAND ${GIT_EXECUTABLE} pull -s recursive -X theirs origin master
   CONFIGURE_COMMAND make clean
-  BUILD_COMMAND make -j
+  BUILD_COMMAND make -j libVal.a CXX=${CMAKE_CXX_COMPILER} CC=${CMAKE_C_COMPILER}
   BUILD_IN_SOURCE 1
-  INSTALL_COMMAND make -j 
+  INSTALL_COMMAND ln -s -F ${CMAKE_CURRENT_BINARY_DIR}/external/src/VAL/include ${CMAKE_CURRENT_BINARY_DIR}/include/val && ln -s -F ${CMAKE_CURRENT_BINARY_DIR}/external/src/VAL/libVal.a ${CMAKE_CURRENT_BINARY_DIR}/lib/
 )
 
 ################################################################
@@ -204,7 +204,9 @@ endif()
 ################################################################
 # VAL LIB
 ################################################################
-set(EXTRA_LIBS ${EXTRA_LIBS} "-lInst")
+set(EXTRA_LIBS ${EXTRA_LIBS} "-lVal")
+set(EXTRA_LIBS ${EXTRA_LIBS} "-lfl")
+
 
 ################################################################
 # EGLIBC (Optional)
@@ -223,12 +225,21 @@ endif()
 # Include Directories
 ################################################################
 include_directories(${PREAL_SOURCE_DIR})
+configure_file("${PREAL_SOURCE_DIR}/version.h.in" "${PREAL_BINARY_DIR}/version.h")
+configure_file("${PREAL_SOURCE_DIR}/config.h.in" "${PREAL_BINARY_DIR}/config.h")
+include_directories("${PREAL_BINARY_DIR}")
+add_subdirectory(util)
+set(PREAL_LIBS ${PREAL_LIBS} util)
+
+
+
+
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PREAL_EXTRA_LINKER_FLAGS} ${EXTERNAL_LD_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS_TESTCOV "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 
 set(EXTRA_LIBS ${PREAL_LIBS} ${EXTRA_LIBS})
-add_executable(pReal main.cpp)
+add_executable(pReal main.cpp translate.cpp smtWriteController.cpp)
 target_link_libraries(pReal ${EXTRA_LIBS})
 
 #add tests
@@ -239,8 +250,8 @@ target_link_libraries(pReal ${EXTRA_LIBS})
 
 #dependencies
 add_dependencies(GLOG GFLAGS)
-#add_dependencies(util GLOG)
-#add_dependencies(util GFLAGS)
+add_dependencies(util GLOG)
+add_dependencies(util GFLAGS)
 #add_dependencies(dsolvers JSON11)
 #add_dependencies(dsolvers realpaver)
 #add_dependencies(dsolvers CAPD3)
@@ -249,10 +260,12 @@ add_dependencies(GLOG GFLAGS)
 add_dependencies(VAL VAL)
 #add_dependencies(realpaver util)
 
+
+
 # Include style check
 include(StyleCheck)
 file(GLOB_RECURSE PREAL_SOURCES
-#  ${PREAL_SOURCE_DIR}/util/*.cpp       ${PREAL_SOURCE_DIR}/util/*.h
+  #${PREAL_SOURCE_DIR}/*.cpp       ${PREAL_SOURCE_DIR}/*.h
  # ${PREAL_SOURCE_DIR}/dsolvers/*.cpp   ${PREAL_SOURCE_DIR}/dsolvers/*.h
  # ${PREAL_SOURCE_DIR}/tests/*.cpp      ${PREAL_SOURCE_DIR}/tests/*.h
   )
