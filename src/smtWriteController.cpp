@@ -93,7 +93,17 @@ void smtWriteController::write_func_term(ostream & o,const func_term * p)
   p->getFunction()->write(o);
   for(parameter_symbol_list::const_iterator i = p->getArgs()->begin();i != p->getArgs()->end();++i){
     o << "_";
-    (*i)->write(o);
+    if(grounding == NULL){
+      (*i)->write(o);
+    }
+    else{
+      for(param_grounding::iterator j = grounding->begin(); j != grounding->end();++j){
+	if((*j).first == *i){
+	  (*j).second->write(o);
+	  break;
+	}
+      }
+    }
   }
 };
 
@@ -158,7 +168,17 @@ void smtWriteController::write_proposition(ostream & o,const proposition * p)
   p->head->write(o);
   for(parameter_symbol_list::iterator i = p->args->begin();i != p->args->end();++i){
     o << "_";
-    (*i)->write(o);
+    if(grounding == NULL){
+      (*i)->write(o);
+    }
+    else{
+      for(param_grounding::iterator j = grounding->begin(); j != grounding->end();++j){
+	if((*j).first == *i){
+	  (*j).second->write(o);
+	  break;
+	}
+      }
+    }
   }
 		
   

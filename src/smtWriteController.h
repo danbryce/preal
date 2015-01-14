@@ -15,16 +15,23 @@ MIT License for more details.
 #pragma once
 
 #include "val/DebugWriteController.h"
+//#include "translate.h"
+typedef std::map<double, std::string> timemap;
+typedef std::map<VAL::var_symbol*, VAL::const_symbol*> param_grounding;
+
 
 namespace VAL {
 
 class smtWriteController : public DebugWriteController {
 protected: 
 	int indent;
+	param_grounding *grounding;
 public:
 	smtWriteController() : indent(0) {};
 	// smtWriteController(VAL::smtWriteContoller* wcnt) : indent(wcnt->indent) {};
 	virtual ~smtWriteController() {};
+
+	void setGrounding(param_grounding *g) { grounding = g; }
 
 	virtual void write_symbol(ostream & o,const symbol *);
 	virtual void write_const_symbol(ostream & o,const const_symbol *);

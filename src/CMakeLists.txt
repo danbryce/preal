@@ -205,7 +205,7 @@ endif()
 # VAL LIB
 ################################################################
 set(EXTRA_LIBS ${EXTRA_LIBS} "-lVal")
-set(EXTRA_LIBS ${EXTRA_LIBS} "-lfl")
+#set(EXTRA_LIBS ${EXTRA_LIBS} "-lfl")
 
 
 ################################################################
